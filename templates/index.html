@@ -22,11 +22,10 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 800px; /* Widened to accommodate 2 columns */
+            max-width: 800px;
         }
         h2 { text-align: center; color: #333; margin-top: 0; }
         
-        /* 2-Column Grid Layout for Sliders */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -57,7 +56,6 @@
             font-size: 14px;
         }
         
-        /* Slider Appearance */
         input[type="range"] {
             width: 100%;
             cursor: pointer;
@@ -88,7 +86,6 @@
             display: none; 
         }
 
-        /* Responsive stack for mobile devices */
         @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr; }
         }
@@ -98,7 +95,6 @@
     <div class="container">
         <h2>Wine Quality Predictor</h2>
         <form id="predictorForm">
-            <!-- IMPORTANT: These inputs are kept in the exact order of your CSV dataset -->
             <div class="form-grid">
                 
                 <div class="input-group">
@@ -193,18 +189,22 @@
 
             <button type="submit">Predict Quality</button>
         </form>
+        
+        <!-- THE FIX: This hidden block acts as the bridge between Flask and JavaScript -->
+        {% if prediction_text %}
+            <div class="result-box" style="display: none;">{{ prediction_text }}</div>
+        {% endif %}
+
         <div id="result"></div>
     </div>
 
     <script>
-        // Dynamically updates the blue text next to each slider
         function updateSliderValue(sliderId) {
             const slider = document.getElementById(sliderId);
             const valueSpan = document.getElementById(sliderId + '_val');
             valueSpan.innerText = slider.value;
         }
 
-        // Submits the form data via AJAX so the page doesn't refresh
         document.getElementById('predictorForm').addEventListener('submit', function(event) {
             event.preventDefault(); 
             
@@ -212,14 +212,14 @@
             
             fetch('/predict', {
                 method: 'POST',
-                body: formData // Send the raw FormData directly to Flask
+                body: formData 
             })
             .then(response => response.text())
             .then(html => {
-                // Because your Flask returns `render_template('index.html')`, 
-                // we extract just the prediction text from the returned HTML.
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
+                
+                // Now JS can successfully find the hidden '.result-box' that Flask generated!
                 const predictionText = doc.querySelector('.result-box') ? doc.querySelector('.result-box').innerText : null;
                 
                 const resultDiv = document.getElementById('result');
