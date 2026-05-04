@@ -2,155 +2,241 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wine Quality Predictor - IT325 PIT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Quality Predictor</title>
     <style>
-        body { 
-            font-family: 'Arial', sans-serif; 
-            background-color: #f4f4f9; 
-            padding: 20px; 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .container { 
-            background: white; 
-            max-width: 800px; /* Widened to fit 3 columns */
-            margin: auto; 
-            padding: 30px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px; /* Widened to accommodate 2 columns */
         }
-        h2 { 
-            color: #2c3e50; 
-            text-align: center; 
-            margin-bottom: 25px;
-        }
+        h2 { text-align: center; color: #333; margin-top: 0; }
         
-        /* CSS Grid to split into 3 columns/rows */
+        /* 2-Column Grid Layout for Sliders */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
         }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
+        .input-group { 
+            background: #fdfdfd;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #eee;
         }
-
-        .input-group label {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
+        label {
+            color: #555;
             font-size: 13px;
+            font-weight: bold;
         }
-
-        .input-group .property-description {
-            font-size: 11px;
-            color: #7f8c8d;
-            margin-bottom: 5px;
-            line-height: 1.3;
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
-
-        input { 
-            width: 100%; 
-            padding: 10px; 
-            margin: 0; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
-            box-sizing: border-box; 
+        .slider-value {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 14px;
         }
         
-        /* Make the button span all 3 columns at the bottom */
-        button { 
-            grid-column: span 3;
-            width: 100%; 
-            padding: 12px; 
-            margin-top: 10px;
-            background-color: #27ae60; 
-            color: white; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
+        /* Slider Appearance */
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: #007bff;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-        button:hover { 
-            background-color: #219150; 
+        button:hover { background-color: #002244; }
+        
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            display: none; 
         }
-        .result { 
-            margin-top: 20px; 
-            text-align: center; 
-            font-weight: bold; 
-            font-size: 1.2em;
-            color: #e67e22; 
+
+        /* Responsive stack for mobile devices */
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Wine Quality Predictor</h2>
-        
-        <!-- Added the .form-grid class to your form -->
-        <form action="/predict" method="post" class="form-grid">
-            <div class="input-group">
-                <label>Fixed Acidity</label>
-                <input type="number" name="fixed_acidity" min="4.6" max="15.9" step="any" required>
+        <form id="predictorForm">
+            <!-- IMPORTANT: These inputs are kept in the exact order of your CSV dataset -->
+            <div class="form-grid">
+                
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="fixed_acidity">Fixed Acidity</label>
+                        <span id="fixed_acidity_val" class="slider-value">10.2</span>
+                    </div>
+                    <input type="range" id="fixed_acidity" name="fixed_acidity" min="4.6" max="15.9" step="0.1" value="10.2" oninput="updateSliderValue('fixed_acidity')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="volatile_acidity">Volatile Acidity</label>
+                        <span id="volatile_acidity_val" class="slider-value">0.85</span>
+                    </div>
+                    <input type="range" id="volatile_acidity" name="volatile_acidity" min="0.12" max="1.58" step="0.01" value="0.85" oninput="updateSliderValue('volatile_acidity')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="citric_acid">Citric Acid</label>
+                        <span id="citric_acid_val" class="slider-value">0.5</span>
+                    </div>
+                    <input type="range" id="citric_acid" name="citric_acid" min="0.0" max="1.0" step="0.01" value="0.5" oninput="updateSliderValue('citric_acid')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="residual_sugar">Residual Sugar</label>
+                        <span id="residual_sugar_val" class="slider-value">8.2</span>
+                    </div>
+                    <input type="range" id="residual_sugar" name="residual_sugar" min="0.9" max="15.5" step="0.1" value="8.2" oninput="updateSliderValue('residual_sugar')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="chlorides">Chlorides</label>
+                        <span id="chlorides_val" class="slider-value">0.311</span>
+                    </div>
+                    <input type="range" id="chlorides" name="chlorides" min="0.012" max="0.611" step="0.001" value="0.311" oninput="updateSliderValue('chlorides')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="free_sulfur">Free Sulfur Dioxide</label>
+                        <span id="free_sulfur_val" class="slider-value">34</span>
+                    </div>
+                    <input type="range" id="free_sulfur" name="free_sulfur" min="1" max="68" step="1" value="34" oninput="updateSliderValue('free_sulfur')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="total_sulfur">Total Sulfur Dioxide</label>
+                        <span id="total_sulfur_val" class="slider-value">147</span>
+                    </div>
+                    <input type="range" id="total_sulfur" name="total_sulfur" min="6" max="289" step="1" value="147" oninput="updateSliderValue('total_sulfur')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="density">Density</label>
+                        <span id="density_val" class="slider-value">0.9968</span>
+                    </div>
+                    <input type="range" id="density" name="density" min="0.99007" max="1.00369" step="0.00001" value="0.99680" oninput="updateSliderValue('density')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="ph">pH</label>
+                        <span id="ph_val" class="slider-value">3.37</span>
+                    </div>
+                    <input type="range" id="ph" name="ph" min="2.74" max="4.01" step="0.01" value="3.37" oninput="updateSliderValue('ph')">
+                </div>
+
+                <div class="input-group">
+                    <div class="slider-header">
+                        <label for="sulphates">Sulphates</label>
+                        <span id="sulphates_val" class="slider-value">1.16</span>
+                    </div>
+                    <input type="range" id="sulphates" name="sulphates" min="0.33" max="2.00" step="0.01" value="1.16" oninput="updateSliderValue('sulphates')">
+                </div>
+
+                <div class="input-group" style="grid-column: 1 / -1;">
+                    <div class="slider-header">
+                        <label for="alcohol">Alcohol (%)</label>
+                        <span id="alcohol_val" class="slider-value">11.6</span>
+                    </div>
+                    <input type="range" id="alcohol" name="alcohol" min="8.4" max="14.9" step="0.1" value="11.6" oninput="updateSliderValue('alcohol')">
+                </div>
+
             </div>
-            
-            <div class="input-group">
-                <label>Volatile Acidity</label>
-                <input type="number" name="volatile_acidity" min="0.12" max="1.58" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Citric Acid</label>
-                <input type="number" name="citric_acid" min="0" max="1" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Residual Sugar</label>
-                <input type="number" name="residual_sugar" min="0.9" max="15.5" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Chlorides</label>
-                <input type="number" name="chlorides" min="0.012" max="0.611" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Free Sulfur Dioxide</label>
-                <input type="number" name="free_sulfur" min="1" max="68" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Total Sulfur Dioxide</label>
-                <input type="number" name="total_sulfur" min="6" max="289" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Density</label>
-                <input type="number" name="density" min="0.99007" max="1.00369" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>pH</label>
-                <input type="number" name="ph" min="2.74" max="4.01" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Sulphates</label>
-                <input type="number" name="sulphates" min="0.33" max="2" step="any" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Alcohol</label>
-                <input type="number" name="alcohol" min="8.4" max="14.9" step="any" required>
-            </div>
-            
+
             <button type="submit">Predict Quality</button>
         </form>
-
-        {% if prediction_text %}
-            <div class="result">{{ prediction_text }}</div>
-        {% endif %}
+        <div id="result"></div>
     </div>
+
+    <script>
+        // Dynamically updates the blue text next to each slider
+        function updateSliderValue(sliderId) {
+            const slider = document.getElementById(sliderId);
+            const valueSpan = document.getElementById(sliderId + '_val');
+            valueSpan.innerText = slider.value;
+        }
+
+        // Submits the form data via AJAX so the page doesn't refresh
+        document.getElementById('predictorForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            
+            const formData = new FormData(this);
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData // Send the raw FormData directly to Flask
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Because your Flask returns `render_template('index.html')`, 
+                // we extract just the prediction text from the returned HTML.
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const predictionText = doc.querySelector('.result-box') ? doc.querySelector('.result-box').innerText : null;
+                
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+                
+                if (predictionText) {
+                    resultDiv.innerText = predictionText;
+                    resultDiv.style.backgroundColor = '#d4edda';
+                    resultDiv.style.color = '#155724';
+                } else {
+                    resultDiv.innerText = 'Prediction received, but could not parse result.';
+                    resultDiv.style.backgroundColor = '#f8d7da';
+                    resultDiv.style.color = '#721c24';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
 </body>
 </html>
