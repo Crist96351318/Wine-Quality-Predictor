@@ -30,6 +30,25 @@
             gap: 15px;
         }
 
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .input-group .property-description {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
         input { 
             width: 100%; 
             padding: 10px; 
@@ -71,17 +90,60 @@
         
         <!-- Added the .form-grid class to your form -->
         <form action="/predict" method="post" class="form-grid">
-            <input type="number" name="fixed_acidity" placeholder="Fixed Acidity" min="0" max="20" step="any" required>
-            <input type="number" name="volatile_acidity" placeholder="Volatile Acidity" min="0" max="20" step="any" required>
-            <input type="number" name="citric_acid" placeholder="Citric Acid" min="0" max="20" step="any" required>
-            <input type="number" name="residual_sugar" placeholder="Residual Sugar" min="0" max="20" step="any" required>
-            <input type="number" name="chlorides" placeholder="Chlorides" min="0" max="20" step="any" required>
-            <input type="number" name="free_sulfur" placeholder="Free Sulfur Dioxide" min="0" max="20" step="any" required>
-            <input type="number" name="total_sulfur" placeholder="Total Sulfur Dioxide" min="0" max="20" step="any" required>
-            <input type="number" name="density" placeholder="Density" min="0" max="20" step="any" required>
-            <input type="number" name="ph" placeholder="pH" min="0" max="20" step="any" required>
-            <input type="number" name="sulphates" placeholder="Sulphates" min="0" max="20" step="any" required>
-            <input type="number" name="alcohol" placeholder="Alcohol" min="0" max="20" step="any" required>
+            <div class="input-group">
+                <label>Fixed Acidity</label>
+                <input type="number" name="fixed_acidity" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Volatile Acidity</label>
+                <input type="number" name="volatile_acidity" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Citric Acid</label>
+                <input type="number" name="citric_acid" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Residual Sugar</label>
+                <input type="number" name="residual_sugar" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Chlorides</label>
+                <input type="number" name="chlorides" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Free Sulfur Dioxide</label>
+                <input type="number" name="free_sulfur" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Total Sulfur Dioxide</label>
+                <input type="number" name="total_sulfur" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Density</label>
+                <input type="number" name="density" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>pH</label>
+                <input type="number" name="ph" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Sulphates</label>
+                <input type="number" name="sulphates" min="0" max="20" step="any" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Alcohol</label>
+                <input type="number" name="alcohol" min="0" max="20" step="any" required>
+            </div>
             
             <button type="submit">Predict Quality</button>
         </form>
