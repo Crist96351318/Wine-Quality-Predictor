@@ -1,24 +1,32 @@
 import pandas as pd
 import pickle
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from imblearn.over_sampling import SMOTE
+from sklearn.metrics import classification_report
 
-# Load your approved dataset
+# 1. Load your approved dataset
 df = pd.read_csv('WineQT.csv')
 
-# Drop the 'Id' column as it is not a feature
+# 2. Data Cleaning: Drop 'Id' as it has no predictive value
+# and separate features (X) from the target (y)
 X = df.drop(['quality', 'Id'], axis=1)
 y = df['quality']
 
-# Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# 3. Apply SMOTE to balance the dataset
+# We use k_neighbors=1 to handle the very small number of samples in classes 3 and 8
+smote = SMOTE(random_state=42, k_neighbors=1)
+X_resampled, y_resampled = smote.fit_resample(X, y)
 
-# Train the model
-model = RandomForestClassifier(n_estimators=100)
-model.fit(X_train, y_train)
+print("Original dataset shape:", y.value_counts().to_dict())
+print("Resampled dataset shape:", y_resampled.value_counts().to_dict())
 
-# Save the model as a .pkl file 
+# 4. Train the Finalized Random Forest Model
+# Random Forest was chosen for its high accuracy and stability
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_resampled, y_resampled)
+
+# 5. Save the model as a .pkl file for your Flask UI
 with open('model.pkl', 'wb') as f:
     pickle.dump(model, f)
 
-print("Model trained and saved as model.pkl")
+print("\nSUCCESS: Final model trained with SMOTE and saved as model.pkl")
